@@ -268,7 +268,7 @@ describe('Chainable types', function(){
       var doc = new Model({ id: 'a'});
       doc.validate();
     }, function(error) {
-      return (error instanceof Errors.ValidationError) && (error.message === "Value for [id] must be longer than 2.");
+      return (error instanceof Errors.ValidationError) && (error.message === "Value for [id] must not be shorter than 2.");
     });
   });
   it('String - min - good', function(){
@@ -288,7 +288,7 @@ describe('Chainable types', function(){
       var doc = new Model({ id: 'abcdefgh'});
       doc.validate();
     }, function(error) {
-      return (error instanceof Errors.ValidationError) && (error.message === "Value for [id] must be shorter than 5.");
+      return (error instanceof Errors.ValidationError) && (error.message === "Value for [id] must not be longer than 5.");
     });
   });
   it('String - max - good', function(){
@@ -452,6 +452,48 @@ describe('Chainable types', function(){
       {init: false})
     var doc = new Model({ id: 'FOOBAR'});
     doc.validate();
+  });
+  it('String - uuid - not uuid v3', function (){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.string().uuid(3) },
+      {init: false})
+    var doc = new Model({id: "xxxA987FBC9-4BED-3078-CF07-9141BA07C9F3"})
+  });
+  it('String - uuid - is uuid v3', function (){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.string().uuid(3) },
+      {init: false})
+    var doc = new Model({id: "A987FBC9-4BED-3078-CF07-9141BA07C9F3"})
+  });
+  it('String - uuid - not uuid v4', function (){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.string().uuid(4) },
+      {init: false})
+    var doc = new Model({id: "A987FBC9-4BED-5078-AF07-9141BA07C9F3"})
+  });
+  it('String - uuid - is uuid v4', function (){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.string().uuid(4) },
+      {init: false})
+    var doc = new Model({id: "713ae7e3-cb32-45f9-adcb-7c4fa86b90c1"})
+  });
+  it('String - uuid - not uuid v5', function (){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.string().uuid(5) },
+      {init: false})
+    var doc = new Model({id: "9c858901-8a57-4791-81fe-4c455b099bc9"})
+  });
+  it('String - uuid - is uuid v5', function (){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.string().uuid(5) },
+      {init: false})
+    var doc = new Model({id: "987FBC97-4BED-5078-BF07-9141BA07C9F3"})
   });
   it('String - validator - return false', function(){
     var name = util.s8();
@@ -639,8 +681,16 @@ describe('Chainable types', function(){
       var doc = new Model({ id: 1});
       doc.validate();
     }, function(error) {
-      return (error instanceof Errors.ValidationError) && (error.message === "Value for [id] must be greater than 2.");
+      return (error instanceof Errors.ValidationError) && (error.message === "Value for [id] must be greater than or equal to 2.");
     });
+  });
+  it('Number - min - negative', function(){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.number().min(-2) },
+      {init: false})
+    var doc = new Model({ id: -1});
+    doc.validate();
   });
   it('Number - min - good', function(){
     var name = util.s8();
@@ -648,6 +698,14 @@ describe('Chainable types', function(){
       {id: type.number().min(2) },
       {init: false})
     var doc = new Model({ id: 3});
+    doc.validate();
+  });
+  it('Number - min - just right', function(){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.number().min(2) },
+      {init: false})
+    var doc = new Model({ id: 2});
     doc.validate();
   });
   it('Number - max - too big', function(){
@@ -659,8 +717,16 @@ describe('Chainable types', function(){
       var doc = new Model({ id: 8});
       doc.validate();
     }, function(error) {
-      return (error instanceof Errors.ValidationError) && (error.message === "Value for [id] must be less than 5.");
+      return (error instanceof Errors.ValidationError) && (error.message === "Value for [id] must be less than or equal to 5.");
     });
+  });
+  it('Number - max - negative', function(){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.number().max(-5) },
+      {init: false})
+    var doc = new Model({ id: -8});
+    doc.validate();
   });
   it('Number - max - good', function(){
     var name = util.s8();
@@ -668,6 +734,14 @@ describe('Chainable types', function(){
       {id: type.number().max(5) },
       {init: false})
     var doc = new Model({ id: 3});
+    doc.validate();
+  });
+  it('Number - max - just right', function(){
+    var name = util.s8();
+    var Model = thinky.createModel(name,
+      {id: type.number().max(5) },
+      {init: false})
+    var doc = new Model({ id: 5});
     doc.validate();
   });
   it('Number - integer - float', function(){
